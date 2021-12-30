@@ -1,12 +1,18 @@
 package lgame
 
 func getPossibleNextStates(settings GameSettings, cur GameState, playerTurn PlayerIndex) []GameState {
-	// TODO: move neutral pieces.
-	return getLShapeMoves(settings, cur, playerTurn)
+	lMoves := getLShapeMoves(settings, cur, playerTurn)
+
+	var totalStates []GameState
+	for _, s := range lMoves {
+		totalStates = append(totalStates, getNeutralMoves(settings, s)...)
+	}
+
+	return totalStates
 }
 
-func getLShapeMoves(settings GameSettings, cur GameState, playerTurn PlayerIndex) []GameState {
-	grid := getOccupation(cur)
+func getLShapeMoves(settings GameSettings, state GameState, playerTurn PlayerIndex) []GameState {
+	grid := getOccupation(state)
 	curPlayerOcc := playerIndexToOccupation[playerTurn]
 	var nextStates []GameState
 
@@ -46,8 +52,35 @@ func getLShapeMoves(settings GameSettings, cur GameState, playerTurn PlayerIndex
 				}
 
 				// Create and append the new state.
-				newState := cur
+				newState := state
 				newState.Players[playerTurn] = newPlacement
+				nextStates = append(nextStates, newState)
+			}
+		}
+	}
+
+	return nextStates
+}
+
+func getNeutralMoves(settings GameSettings, state GameState) []GameState {
+	var nextStates []GameState
+
+	for i, n := range state.Neutrals {
+		grid := getOccupation(state)
+		delete(grid, Coordinate(n))
+
+		for x := 0; x < settings.BoardWidth; x++ {
+			for y := 0; y < settings.BoardHeight; y++ {
+				check := Coordinate{x, y}
+
+				// Check if the space is occupied.
+				if _, ok := grid[check]; ok {
+					continue
+				}
+
+				// Create and append the new state.
+				newState := state
+				newState.Neutrals[i] = NeutralPiece(check)
 				nextStates = append(nextStates, newState)
 			}
 		}

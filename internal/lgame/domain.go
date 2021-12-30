@@ -1,19 +1,23 @@
 package lgame
 
 type GameState struct {
-	blue     LPiece
-	red      LPiece
-	neutrals [2]NeutralPiece
+	Players  [2]LPiece
+	Neutrals [2]NeutralPiece
 }
 
 type Coordinate struct {
-	x int
-	y int
+	X int
+	Y int
 }
 
 type LPiece [4]Coordinate
 
 type NeutralPiece Coordinate
+
+const (
+	PlayerRed = iota
+	PlayerBlue
+)
 
 /*
 Order of coordinates of the L-shapes:

@@ -24,7 +24,7 @@ func drawState(settings GameSettings, state GameState) string {
 	// Add the players.
 	for i, p := range state.Players {
 		color := 1
-		if i == PlayerBlue {
+		if i == int(PlayerBlue) {
 			color = 4
 		}
 

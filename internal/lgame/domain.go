@@ -14,10 +14,27 @@ type LPiece [4]Coordinate
 
 type NeutralPiece Coordinate
 
+type PlayerIndex int
+
 const (
-	PlayerRed = iota
+	PlayerRed PlayerIndex = iota
 	PlayerBlue
 )
+
+type occupation int
+
+const (
+	occupiedRed occupation = iota
+	occupiedBlue
+	occupiedNeutral
+)
+
+type occupationGrid map[Coordinate]occupation
+
+var playerIndexToOccupation = map[PlayerIndex]occupation{
+	PlayerRed:  occupiedRed,
+	PlayerBlue: occupiedBlue,
+}
 
 /*
 Order of coordinates of the L-shapes:

@@ -1,13 +1,13 @@
 package lgame
 
-func getPossibleNextStates(settings GameSettings, cur GameState, playerTurn int) []GameState {
+func getPossibleNextStates(settings GameSettings, cur GameState, playerTurn PlayerIndex) []GameState {
 	// TODO: move neutral pieces.
 	return getLShapeMoves(settings, cur, playerTurn)
 }
 
-func getLShapeMoves(settings GameSettings, cur GameState, playerTurn int) []GameState {
-	occupation := getOccupation(settings, cur, playerTurn)
-	playerOccupation := getPlayerOccupation(cur.Players[playerTurn])
+func getLShapeMoves(settings GameSettings, cur GameState, playerTurn PlayerIndex) []GameState {
+	grid := getOccupation(cur)
+	curPlayerOcc := playerIndexToOccupation[playerTurn]
 	var nextStates []GameState
 
 	for _, lShape := range lShapes {
@@ -33,15 +33,15 @@ func getLShapeMoves(settings GameSettings, cur GameState, playerTurn int) []Game
 					newPlacement[i] = newC
 				}
 
-				// Check if any of the placement coordinates are occupied.
+				// Check if any of the placement coordinates are occupied by something other than the current player.
 				for _, c := range newPlacement {
-					if occupation[c] {
+					if o, ok := grid[c]; ok && o != curPlayerOcc {
 						continue ROWS
 					}
 				}
 
 				// Check if the placement is the same as the previous placement.
-				if isSamePlacement(newPlacement, playerOccupation) {
+				if isSamePlacement(newPlacement, grid) {
 					continue
 				}
 
@@ -56,49 +56,29 @@ func getLShapeMoves(settings GameSettings, cur GameState, playerTurn int) []Game
 	return nextStates
 }
 
-func getOccupation(settings GameSettings, state GameState, playerTurn int) map[Coordinate]bool {
-	occupied := map[Coordinate]bool{}
-
-	// Initialize all occupied coords to false.
-	for x := 0; x < settings.BoardWidth; x++ {
-		for y := 0; y < settings.BoardHeight; y++ {
-			occupied[Coordinate{x, y}] = false
-		}
-	}
+func getOccupation(state GameState) occupationGrid {
+	occupied := occupationGrid{}
 
 	// Add the L pieces.
 	for i, p := range state.Players {
-		// Skip the current player.
-		if i == playerTurn {
-			continue
-		}
-
 		for _, c := range p {
-			occupied[c] = true
+			occupied[c] = playerIndexToOccupation[PlayerIndex(i)]
 		}
 	}
 
 	// Add the neutral pieces.
 	for _, n := range state.Neutrals {
-		occupied[Coordinate{n.X, n.Y}] = true
+		occupied[Coordinate{n.X, n.Y}] = occupiedNeutral
 	}
 
 	return occupied
 }
 
-func getPlayerOccupation(piece LPiece) map[Coordinate]bool {
-	occupation := map[Coordinate]bool{}
-
+func isSamePlacement(piece LPiece, grid occupationGrid) bool {
 	for _, c := range piece {
-		occupation[c] = true
-	}
-
-	return occupation
-}
-
-func isSamePlacement(piece LPiece, playerOccupation map[Coordinate]bool) bool {
-	for _, c := range piece {
-		if _, ok := playerOccupation[c]; !ok {
+		// Here we assume that the L piece placement is valid,
+		// i.e. it only ever overlaps with itself.
+		if _, ok := grid[c]; !ok {
 			return false
 		}
 	}

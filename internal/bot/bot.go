@@ -17,7 +17,7 @@ func NewBot() *Bot {
 			bufio.NewReader(os.Stdin),
 			bufio.NewWriter(os.Stdout),
 		),
-		currentState: botStartingState,
+		currentState: awaitBotStart,
 	}
 }
 
@@ -25,6 +25,26 @@ func (bot *Bot) Start() {
 	for bot.currentState != nil {
 		bot.currentState = bot.currentState(bot)
 	}
+}
+
+func (bot *Bot) expectCommand(expected string) string {
+	bot.printComment("Waiting for command: " + expected)
+	cmd, arg := bot.readCommand()
+	if cmd != expected {
+		panic("Expected command " + expected + " but got " + cmd)
+	}
+	return arg
+}
+
+func (bot *Bot) readCommand() (string, string) {
+	parts := strings.SplitN(bot.readLine(), " ", 2)
+
+	arg := ""
+	if len(parts) > 1 {
+		arg = strings.TrimSpace(parts[1])
+	}
+
+	return parts[0], arg
 }
 
 func (bot *Bot) readLine() string {

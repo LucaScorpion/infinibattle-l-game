@@ -1,19 +1,50 @@
 package bot
 
+import (
+	"fmt"
+	"strconv"
+	"time"
+)
+
 type stateFn func(*Bot) stateFn
 
-func botStartingState(bot *Bot) stateFn {
-	bot.printComment("Waiting for bot-start")
-	if l := bot.readLine(); l != "bot-start" {
-		panic("Expected bot-start but got: " + l)
-	}
-	return botStartedState
+func awaitBotStart(bot *Bot) stateFn {
+	bot.expectCommand("bot-start")
+	return awaitGameInit
 }
 
-func botStartedState(bot *Bot) stateFn {
-	bot.printComment("Waiting for game-init")
-	if l := bot.readLine(); l != "game-init" {
-		panic("Expected game-init but got: " + l)
+func awaitGameInit(bot *Bot) stateFn {
+	bot.expectCommand("game-init")
+	return awaitGameStart
+}
+
+func awaitGameStart(bot *Bot) stateFn {
+	bot.expectCommand("game-start")
+	return awaitTurn
+}
+
+func awaitTurn(bot *Bot) stateFn {
+	bot.printComment("Waiting for command: turn-init, sleep, or throw")
+	cmd, arg := bot.readCommand()
+
+	switch cmd {
+	case "sleep":
+		if seconds, err := strconv.Atoi(arg); err == nil {
+			bot.printComment(fmt.Sprintf("Sleeping for %d seconds", seconds))
+			time.Sleep(time.Duration(seconds) * time.Second)
+		}
+		return awaitTurn
+	case "throw":
+		return nil
+	case "turn-init":
+		return awaitTurnStart
+	default:
+		panic("Invalid command while awaiting turn: " + cmd)
 	}
-	return nil
+}
+
+func awaitTurnStart(bot *Bot) stateFn {
+	bot.expectCommand("turn-start")
+	// TODO
+	return awaitTurn
 }

@@ -46,5 +46,6 @@ func awaitTurn(bot *Bot) stateFn {
 func awaitTurnStart(bot *Bot) stateFn {
 	bot.expectCommand("turn-start")
 	// TODO
+	bot.writeLine("turn-end")
 	return awaitTurn
 }

@@ -22,3 +22,10 @@ const (
 	player2 pieceType = 2
 	neutral pieceType = 4
 )
+
+type coordinate [2]int
+
+type placePiecesCommand struct {
+	PlayerLPieceCoordinates [4]coordinate `json:"playerLPieceCoordinates"`
+	NeutralPieceCoordinates [2]coordinate `json:"neutralPieceCoordinates"`
+}

@@ -1,10 +1,7 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
+import "infinibattle-l-game/internal/bot"
 
 func main() {
-	fmt.Println(os.Args)
+	bot.NewBot().Start()
 }

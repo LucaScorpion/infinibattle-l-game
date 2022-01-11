@@ -3,9 +3,12 @@
 ## Development
 
 ```shell
-# Run the tests
+# Run the tests.
 go test ./...
 
-# Format the code
+# Format the code.
 go fmt ./...
+
+# Run the bot.
+go run ./main.go
 ```

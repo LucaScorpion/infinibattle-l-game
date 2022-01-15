@@ -1,22 +1,17 @@
 package lgame
 
-func GetNextState(cur GameState) GameState {
-	// TODO
-	return getPossibleNextStates(DefaultSettings(), cur)[0]
-}
-
-func getPossibleNextStates(settings GameSettings, cur GameState) []GameState {
-	lMoves := getLShapeMoves(settings, cur)
+func GetPossibleNextStates(settings GameSettings, cur GameState) []GameState {
+	lMoves := GetLShapeMoves(settings, cur)
 
 	var totalStates []GameState
 	for _, s := range lMoves {
-		totalStates = append(totalStates, getNeutralMoves(settings, s)...)
+		totalStates = append(totalStates, GetNeutralMoves(settings, s)...)
 	}
 
 	return totalStates
 }
 
-func getLShapeMoves(settings GameSettings, state GameState) []GameState {
+func GetLShapeMoves(settings GameSettings, state GameState) []GameState {
 	grid := getOccupation(state)
 	curPlayerOcc := playerIndexToOccupation[state.Turn]
 	var nextStates []GameState
@@ -68,7 +63,7 @@ func getLShapeMoves(settings GameSettings, state GameState) []GameState {
 	return nextStates
 }
 
-func getNeutralMoves(settings GameSettings, state GameState) []GameState {
+func GetNeutralMoves(settings GameSettings, state GameState) []GameState {
 	var nextStates []GameState
 
 	for i, n := range state.Neutrals {

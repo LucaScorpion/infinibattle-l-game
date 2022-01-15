@@ -89,7 +89,7 @@ func TestGetLShapeMoves(t *testing.T) {
 	t.Log("Starting state:")
 	t.Log(drawState(DefaultSettings(), state))
 
-	nextStates := getLShapeMoves(DefaultSettings(), state)
+	nextStates := GetLShapeMoves(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible L-shape moves:")
@@ -109,7 +109,7 @@ func TestGetNeutralMoves(t *testing.T) {
 	t.Log("Starting state:")
 	t.Log(drawState(DefaultSettings(), state))
 
-	nextStates := getNeutralMoves(DefaultSettings(), state)
+	nextStates := GetNeutralMoves(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible neutral moves:")
@@ -129,7 +129,7 @@ func TestGetMoves(t *testing.T) {
 	t.Log("Starting state:")
 	t.Log(drawState(DefaultSettings(), state))
 
-	nextStates := getPossibleNextStates(DefaultSettings(), state)
+	nextStates := GetPossibleNextStates(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible moves:")
@@ -149,7 +149,7 @@ func TestGetMovesDifficult(t *testing.T) {
 	t.Log("Starting state:")
 	t.Log(drawState(DefaultSettings(), state))
 
-	nextStates := getPossibleNextStates(DefaultSettings(), state)
+	nextStates := GetPossibleNextStates(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible moves:")

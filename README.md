@@ -20,9 +20,9 @@ stateDiagram-v2
 
 [*] --> BotStarted: bot-start
 BotStarted --> GameInitialised: game-init
-GameInitialised --> AwaitingTurn: game-start [turnState]
+GameInitialised --> AwaitingTurn: game-start\n[turnState]
 AwaitingTurn --> TurnInitialised: turn-init
-TurnInitialised --> TurnStarted: turn-start [turnState]
+TurnInitialised --> TurnStarted: turn-start\n[turnState]
 TurnStarted --> AwaitingTurn
 
 AwaitingTurn --> [*]: throw

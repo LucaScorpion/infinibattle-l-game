@@ -1,7 +1,12 @@
 package lgame
 
-func getPossibleNextStates(settings GameSettings, cur GameState, playerTurn PlayerIndex) []GameState {
-	lMoves := getLShapeMoves(settings, cur, playerTurn)
+func GetNextState(cur GameState) GameState {
+	// TODO
+	return getPossibleNextStates(DefaultSettings(), cur)[0]
+}
+
+func getPossibleNextStates(settings GameSettings, cur GameState) []GameState {
+	lMoves := getLShapeMoves(settings, cur)
 
 	var totalStates []GameState
 	for _, s := range lMoves {
@@ -11,9 +16,9 @@ func getPossibleNextStates(settings GameSettings, cur GameState, playerTurn Play
 	return totalStates
 }
 
-func getLShapeMoves(settings GameSettings, state GameState, playerTurn PlayerIndex) []GameState {
+func getLShapeMoves(settings GameSettings, state GameState) []GameState {
 	grid := getOccupation(state)
-	curPlayerOcc := playerIndexToOccupation[playerTurn]
+	curPlayerOcc := playerIndexToOccupation[state.Turn]
 	var nextStates []GameState
 
 	for _, lShape := range lShapes {
@@ -53,7 +58,8 @@ func getLShapeMoves(settings GameSettings, state GameState, playerTurn PlayerInd
 
 				// Create and append the new state.
 				newState := state
-				newState.Players[playerTurn] = newPlacement
+				newState.Turn = (state.Turn + 1) % 2
+				newState.Players[state.Turn] = newPlacement
 				nextStates = append(nextStates, newState)
 			}
 		}

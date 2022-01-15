@@ -27,24 +27,12 @@ func (bot *Bot) Start() {
 	}
 }
 
-func (bot *Bot) expectCommand(expected string) string {
-	bot.printComment("Waiting for command: " + expected)
-	cmd, arg := bot.readCommand()
-	if cmd != expected {
-		panic("Expected command " + expected + " but got " + cmd)
+func (bot *Bot) expectLine(expected string) {
+	bot.printComment("Waiting for: " + expected)
+	line := bot.readLine()
+	if line != expected {
+		panic("Expected " + expected + " but got " + line)
 	}
-	return arg
-}
-
-func (bot *Bot) readCommand() (string, string) {
-	parts := strings.SplitN(bot.readLine(), " ", 2)
-
-	arg := ""
-	if len(parts) > 1 {
-		arg = strings.TrimSpace(parts[1])
-	}
-
-	return parts[0], arg
 }
 
 func (bot *Bot) readLine() string {

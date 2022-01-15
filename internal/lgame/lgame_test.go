@@ -21,7 +21,8 @@ y ┌─────────┐
 */
 func getSimpleState() GameState {
 	return GameState{
-		Players: [2]LPiece{
+		Turn: PlayerRed,
+		Players: []LPiece{
 			{
 				{1, 0},
 				{1, 1},
@@ -35,7 +36,7 @@ func getSimpleState() GameState {
 				{3, 3},
 			},
 		},
-		Neutrals: [2]NeutralPiece{
+		Neutrals: []NeutralPiece{
 			{2, 0},
 			{1, 3},
 		},
@@ -59,7 +60,8 @@ y ┌─────────┐
 */
 func getDifficultState() GameState {
 	return GameState{
-		Players: [2]LPiece{
+		Turn: PlayerBlue,
+		Players: []LPiece{
 			{
 				{0, 2},
 				{0, 1},
@@ -73,7 +75,7 @@ func getDifficultState() GameState {
 				{3, 3},
 			},
 		},
-		Neutrals: [2]NeutralPiece{
+		Neutrals: []NeutralPiece{
 			{2, 0},
 			{0, 3},
 		},
@@ -87,7 +89,7 @@ func TestGetLShapeMoves(t *testing.T) {
 	t.Log("Starting state:")
 	t.Log(drawState(DefaultSettings(), state))
 
-	nextStates := getLShapeMoves(DefaultSettings(), state, PlayerRed)
+	nextStates := getLShapeMoves(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible L-shape moves:")
@@ -127,7 +129,7 @@ func TestGetMoves(t *testing.T) {
 	t.Log("Starting state:")
 	t.Log(drawState(DefaultSettings(), state))
 
-	nextStates := getPossibleNextStates(DefaultSettings(), state, PlayerRed)
+	nextStates := getPossibleNextStates(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible moves:")
@@ -147,7 +149,7 @@ func TestGetMovesDifficult(t *testing.T) {
 	t.Log("Starting state:")
 	t.Log(drawState(DefaultSettings(), state))
 
-	nextStates := getPossibleNextStates(DefaultSettings(), state, PlayerBlue)
+	nextStates := getPossibleNextStates(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible moves:")

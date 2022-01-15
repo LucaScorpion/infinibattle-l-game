@@ -28,6 +28,7 @@ func GetLShapeMoves(settings GameSettings, state GameState) []GameState {
 
 				// Get the new L piece placement.
 				newPlacement := LPiece{}
+				isCornerPoint := false
 				for i, c := range lShape {
 					newC := Coordinate{c.X + offsetX, c.Y + offsetY}
 
@@ -37,6 +38,11 @@ func GetLShapeMoves(settings GameSettings, state GameState) []GameState {
 					}
 
 					newPlacement[i] = newC
+
+					// Check if the piece scores a corner point.
+					if (newC.X == 0 || newC.X == settings.BoardWidth-1) && (newC.Y == 0 || newC.Y == settings.BoardHeight-1) {
+						isCornerPoint = true
+					}
 				}
 
 				// Check if any of the placement coordinates are occupied by something other than the current player.
@@ -51,10 +57,12 @@ func GetLShapeMoves(settings GameSettings, state GameState) []GameState {
 					continue
 				}
 
-				// Create and append the new state.
+				// Create the new state.
 				newState := state
 				newState.Players[state.PlayerTurn].Piece = newPlacement
-				// TODO: Calculate corner points.
+				if isCornerPoint {
+					newState.Players[state.PlayerTurn].Score++
+				}
 				newState.PlayerTurn = (state.PlayerTurn + 1) % 2
 				nextStates = append(nextStates, newState)
 			}

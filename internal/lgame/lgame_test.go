@@ -21,19 +21,25 @@ y ┌─────────┐
 */
 func getSimpleState() GameState {
 	return GameState{
-		Turn: PlayerRed,
-		Players: []LPiece{
+		PlayerTurn: PlayerRed,
+		Players: []Player{
 			{
-				{1, 0},
-				{1, 1},
-				{1, 2},
-				{0, 2},
+				Piece: LPiece{
+					{1, 0},
+					{1, 1},
+					{1, 2},
+					{0, 2},
+				},
+				Score: 0,
 			},
 			{
-				{2, 1},
-				{2, 2},
-				{2, 3},
-				{3, 3},
+				Piece: LPiece{
+					{2, 1},
+					{2, 2},
+					{2, 3},
+					{3, 3},
+				},
+				Score: 0,
 			},
 		},
 		Neutrals: []NeutralPiece{
@@ -60,19 +66,25 @@ y ┌─────────┐
 */
 func getDifficultState() GameState {
 	return GameState{
-		Turn: PlayerBlue,
-		Players: []LPiece{
+		PlayerTurn: PlayerBlue,
+		Players: []Player{
 			{
-				{0, 2},
-				{0, 1},
-				{0, 0},
-				{1, 0},
+				Piece: LPiece{
+					{0, 2},
+					{0, 1},
+					{0, 0},
+					{1, 0},
+				},
+				Score: 0,
 			},
 			{
-				{1, 2},
-				{2, 2},
-				{3, 2},
-				{3, 3},
+				Piece: LPiece{
+					{1, 2},
+					{2, 2},
+					{3, 2},
+					{3, 3},
+				},
+				Score: 0,
 			},
 		},
 		Neutrals: []NeutralPiece{

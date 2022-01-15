@@ -3,11 +3,13 @@ package parser
 type turnState struct {
 	GameState gameState `json:"gameState"`
 	Turn      int       `json:"turn"`
-	Player    int       `json:"player"`
+	Player    int       `json:"player"` // One of the piece types.
 }
 
 type gameState struct {
-	Board boardState `json:"board"`
+	Board        boardState `json:"board"`
+	ScorePlayer0 int        `json:"scorePlayer0"`
+	ScorePlayer1 int        `json:"scorePlayer1"`
 }
 
 type boardState struct {

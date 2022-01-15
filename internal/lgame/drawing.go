@@ -28,7 +28,7 @@ func drawState(settings GameSettings, state GameState) string {
 			color = 4
 		}
 
-		for _, c := range p {
+		for _, c := range p.Piece {
 			grid[c.Y][c.X] = fmt.Sprintf("\x1b[3%d;4%dm%d%d\x1b[0m", color, color, i, i)
 		}
 	}

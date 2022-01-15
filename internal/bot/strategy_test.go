@@ -24,19 +24,25 @@ y ┌─────────┐
 */
 func getDifficultState() lgame.GameState {
 	return lgame.GameState{
-		Turn: lgame.PlayerBlue,
-		Players: []lgame.LPiece{
+		PlayerTurn: lgame.PlayerBlue,
+		Players: []lgame.Player{
 			{
-				{0, 2},
-				{0, 1},
-				{0, 0},
-				{1, 0},
+				Piece: lgame.LPiece{
+					{0, 2},
+					{0, 1},
+					{0, 0},
+					{1, 0},
+				},
+				Score: 0,
 			},
 			{
-				{1, 2},
-				{2, 2},
-				{3, 2},
-				{3, 3},
+				Piece: lgame.LPiece{
+					{1, 2},
+					{2, 2},
+					{3, 2},
+					{3, 3},
+				},
+				Score: 0,
 			},
 		},
 		Neutrals: []lgame.NeutralPiece{
@@ -48,15 +54,15 @@ func getDifficultState() lgame.GameState {
 
 func BenchmarkGetNextState(b *testing.B) {
 	totalTime := 0.0
-	worstTime := math.MaxFloat64
+	worstTime := 0.0
 
 	for i := 0; i < b.N; i++ {
 		startTime := time.Now()
 
-		GetNextState(lgame.DefaultSettings(), getDifficultState())
+		getNextState(lgame.DefaultSettings(), getDifficultState())
 
 		thinkTime := time.Now().Sub(startTime).Seconds()
-		worstTime = math.Min(worstTime, thinkTime)
+		worstTime = math.Max(worstTime, thinkTime)
 		totalTime = totalTime + thinkTime
 	}
 

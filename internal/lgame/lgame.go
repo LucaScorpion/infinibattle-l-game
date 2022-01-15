@@ -13,7 +13,7 @@ func GetPossibleNextStates(settings GameSettings, cur GameState) []GameState {
 
 func GetLShapeMoves(settings GameSettings, state GameState) []GameState {
 	grid := getOccupation(state)
-	curPlayerOcc := playerIndexToOccupation[state.Turn]
+	curPlayerOcc := playerIndexToOccupation[state.PlayerTurn]
 	var nextStates []GameState
 
 	for _, lShape := range lShapes {
@@ -53,8 +53,9 @@ func GetLShapeMoves(settings GameSettings, state GameState) []GameState {
 
 				// Create and append the new state.
 				newState := state
-				newState.Turn = (state.Turn + 1) % 2
-				newState.Players[state.Turn] = newPlacement
+				newState.Players[state.PlayerTurn].Piece = newPlacement
+				// TODO: Calculate corner points.
+				newState.PlayerTurn = (state.PlayerTurn + 1) % 2
 				nextStates = append(nextStates, newState)
 			}
 		}
@@ -95,7 +96,7 @@ func getOccupation(state GameState) occupationGrid {
 
 	// Add the L pieces.
 	for i, p := range state.Players {
-		for _, c := range p {
+		for _, c := range p.Piece {
 			occupied[c] = playerIndexToOccupation[PlayerIndex(i)]
 		}
 	}

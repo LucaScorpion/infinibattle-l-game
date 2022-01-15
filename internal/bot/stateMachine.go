@@ -58,10 +58,14 @@ func awaitTurn(bot *Bot) stateFn {
 func awaitTurnStart(bot *Bot) stateFn {
 	bot.expectLine("turn-start")
 	state := parser.ParseGameState(bot.readLine())
+
+	// Get the next state, benchmark.
 	startTime := time.Now()
-	lgame.GetNextState(state)
+	nextState := lgame.GetNextState(state)
 	thinkTime := time.Now().Sub(startTime).Seconds()
 	bot.printComment(fmt.Sprintf("Thinking took %.2f seconds", thinkTime))
+
+	bot.writeLine(parser.GetMoveOutput(nextState))
 	bot.writeLine("turn-end")
 	return awaitTurn
 }

@@ -49,3 +49,28 @@ func parseTurnState(in string) turnState {
 	}
 	return state
 }
+
+func GetMoveOutput(state lgame.GameState) string {
+	var place placePiecesCommand
+	for i := 0; i < len(state.Neutrals); i++ {
+		place.NeutralPieceCoordinates[i] = coordinateOutput(lgame.Coordinate(state.Neutrals[i]))
+	}
+
+	// Get the previous player, for which we should output the coordinates.
+	prevPlayer := (state.Turn + 1) % 2
+	playerPiece := state.Players[prevPlayer]
+
+	for i := 0; i < len(playerPiece); i++ {
+		place.PlayerLPieceCoordinates[i] = coordinateOutput(playerPiece[i])
+	}
+
+	bytes, err := json.Marshal(place)
+	if err != nil {
+		panic(err)
+	}
+	return string(bytes)
+}
+
+func coordinateOutput(coord lgame.Coordinate) coordinate {
+	return coordinate{coord.X, coord.Y}
+}

@@ -1,2 +1,6 @@
 # IDEs
 .idea/
+
+# Build output
+luca.bin
+luca.zip

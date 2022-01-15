@@ -1,6 +1,9 @@
 package bot
 
-import "infinibattle-l-game/internal/lgame"
+import (
+	"infinibattle-l-game/internal/lgame"
+	"math/rand"
+)
 
 type moveOption struct {
 	ourMove       lgame.GameState
@@ -8,15 +11,15 @@ type moveOption struct {
 }
 
 type opponentMoveOption struct {
-	move lgame.GameState
-	//ourMoves []lgame.GameState // TODO: Is this required?
+	move      lgame.GameState
+	ourLMoves []lgame.GameState
 }
 
 func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameState {
 	moveOptions := buildMoveOptions(settings, cur)
 
 	curScore := cur.Players[cur.PlayerTurn].Score
-	var cornerPointMoves []moveOption
+	var scoringMoves []moveOption
 
 	for _, move := range moveOptions {
 		// TODO: Check if this actually wins, or if it is dependent on the score.
@@ -27,17 +30,27 @@ func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameSt
 
 		// Check if this move increases our score.
 		if move.ourMove.Players[cur.PlayerTurn].Score > curScore {
-			cornerPointMoves = append(cornerPointMoves, move)
+			scoringMoves = append(scoringMoves, move)
 		}
 	}
 
-	// TODO: Find best corner point move?
-	if len(cornerPointMoves) > 0 {
-		return cornerPointMoves[0].ourMove
+	// TODO: Check if getting locked in matters, or if it is dependent on the score.
+	// Return the first scoring move that doesn't lock us in.
+	for _, move := range scoringMoves {
+		if canMoveAfterAnyOpponentMove(settings, &move) {
+			return move.ourMove
+		}
 	}
 
-	// TODO: If all else fails.
-	return moveOptions[0].ourMove
+	// Find any move that doesn't lock us in.
+	for _, move := range moveOptions {
+		if canMoveAfterAnyOpponentMove(settings, &move) {
+			return move.ourMove
+		}
+	}
+
+	// Uhm... we're fucked I guess? Just return any move.
+	return moveOptions[rand.Intn(len(moveOptions))].ourMove
 }
 
 func buildMoveOptions(settings lgame.GameSettings, cur lgame.GameState) []moveOption {
@@ -61,4 +74,23 @@ func buildMoveOptions(settings lgame.GameSettings, cur lgame.GameState) []moveOp
 	}
 
 	return moveOptions
+}
+
+func canMoveAfterAnyOpponentMove(settings lgame.GameSettings, move *moveOption) bool {
+	for _, opponentMove := range move.opponentMoves {
+		loadOurMovesAfterOpponentMove(settings, &opponentMove)
+
+		if len(opponentMove.ourLMoves) == 0 {
+			return false
+		}
+	}
+
+	return true
+}
+
+func loadOurMovesAfterOpponentMove(settings lgame.GameSettings, opponentMove *opponentMoveOption) {
+	if opponentMove.ourLMoves == nil {
+		// Here we only need to look at our possible L shape moves.
+		opponentMove.ourLMoves = lgame.GetLShapeMoves(settings, opponentMove.move)
+	}
 }

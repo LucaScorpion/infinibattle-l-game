@@ -47,6 +47,7 @@ func awaitTurn(bot *Bot) stateFn {
 		//}
 		return awaitTurn
 	case "throw":
+		bot.printComment("gg")
 		return nil
 	case "turn-init":
 		return awaitTurnStart

@@ -6,7 +6,7 @@ import (
 )
 
 type moveOption struct {
-	ourMove       lgame.GameState
+	state         lgame.GameState
 	opponentMoves []opponentMoveOption
 }
 
@@ -22,35 +22,33 @@ func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameSt
 	var scoringMoves []moveOption
 
 	for _, move := range moveOptions {
-		// TODO: Check if this actually wins, or if it is dependent on the score.
-		// Check for a winning move.
-		if len(move.opponentMoves) == 0 {
-			return move.ourMove
+		// Check for a blocking move, but only if our score is higher.
+		if len(move.opponentMoves) == 0 && weAreWinning(cur.PlayerTurn, move.state) {
+			return move.state
 		}
 
 		// Check if this move increases our score.
-		if move.ourMove.Players[cur.PlayerTurn].Score > curScore {
+		if move.state.Players[cur.PlayerTurn].Score > curScore {
 			scoringMoves = append(scoringMoves, move)
 		}
 	}
 
-	// TODO: Check if getting locked in matters, or if it is dependent on the score.
-	// Return the first scoring move that doesn't lock us in.
+	// Return the first scoring move that doesn't lock us in (unless our score is higher).
 	for _, move := range scoringMoves {
-		if canMoveAfterAnyOpponentMove(settings, &move) {
-			return move.ourMove
+		if isWinningOrFreeMove(settings, &move, cur.PlayerTurn) {
+			return move.state
 		}
 	}
 
-	// Find any move that doesn't lock us in.
+	// Find any move that doesn't lock us in (unless our score is higher).
 	for _, move := range moveOptions {
-		if canMoveAfterAnyOpponentMove(settings, &move) {
-			return move.ourMove
+		if isWinningOrFreeMove(settings, &move, cur.PlayerTurn) {
+			return move.state
 		}
 	}
 
 	// Uhm... we're fucked I guess? Just return any move.
-	return moveOptions[rand.Intn(len(moveOptions))].ourMove
+	return moveOptions[rand.Intn(len(moveOptions))].state
 }
 
 func buildMoveOptions(settings lgame.GameSettings, cur lgame.GameState) []moveOption {
@@ -62,7 +60,7 @@ func buildMoveOptions(settings lgame.GameSettings, cur lgame.GameState) []moveOp
 		opponentOptions := lgame.GetPossibleNextStates(settings, ourMoves[i])
 
 		moveOptions[i] = moveOption{
-			ourMove:       ourMoves[i],
+			state:         ourMoves[i],
 			opponentMoves: make([]opponentMoveOption, len(opponentOptions)),
 		}
 
@@ -95,7 +93,11 @@ func loadOurMovesAfterOpponentMove(settings lgame.GameSettings, opponentMove *op
 	}
 }
 
-// TODO: implement this
-//func weAreWinning(thisPlayer lgame.PlayerIndex, state lgame.GameState) bool {
-//	return state.Players[thisPlayer].Score > state.Players[thisPlayer]
-//}
+func isWinningOrFreeMove(settings lgame.GameSettings, move *moveOption, thisPlayer lgame.PlayerIndex) bool {
+	// We only care about being locked in if we are behind in score.
+	return weAreWinning(thisPlayer, move.state) || canMoveAfterAnyOpponentMove(settings, move)
+}
+
+func weAreWinning(thisPlayer lgame.PlayerIndex, state lgame.GameState) bool {
+	return state.Players[thisPlayer].Score > state.Players[lgame.OtherPlayer(thisPlayer)].Score
+}

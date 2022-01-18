@@ -14,7 +14,8 @@ func ParseGameState(in string) lgame.GameState {
 	playerOneLen := 0
 	playerTwo := lgame.LPiece{}
 	playerTwoLen := 0
-	var neutrals []lgame.NeutralPiece
+	var neutrals [2]lgame.NeutralPiece
+	neutralsLen := 0
 
 	for y := 0; y < len(board); y++ {
 		for x := 0; x < len(board[y]); x++ {
@@ -28,7 +29,8 @@ func ParseGameState(in string) lgame.GameState {
 				playerTwo[playerTwoLen] = lgame.Coordinate{X: x, Y: y}
 				playerTwoLen++
 			case neutral:
-				neutrals = append(neutrals, lgame.NeutralPiece{X: x, Y: y})
+				neutrals[neutralsLen] = lgame.NeutralPiece{X: x, Y: y}
+				neutralsLen++
 			default:
 				panic(fmt.Sprintf("Unknown piece type: %d", board[y][x]))
 			}
@@ -37,7 +39,7 @@ func ParseGameState(in string) lgame.GameState {
 
 	return lgame.GameState{
 		PlayerTurn: lgame.PlayerIndex(turn.Player),
-		Players: []lgame.Player{
+		Players: [2]lgame.Player{
 			{
 				Piece: playerOne,
 				Score: turn.GameState.ScorePlayer0,

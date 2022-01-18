@@ -25,7 +25,7 @@ y ┌─────────┐
 func getDifficultState() lgame.GameState {
 	return lgame.GameState{
 		PlayerTurn: lgame.PlayerBlue,
-		Players: []lgame.Player{
+		Players: [2]lgame.Player{
 			{
 				Piece: lgame.LPiece{
 					{0, 2},
@@ -45,7 +45,7 @@ func getDifficultState() lgame.GameState {
 				Score: 0,
 			},
 		},
-		Neutrals: []lgame.NeutralPiece{
+		Neutrals: [2]lgame.NeutralPiece{
 			{2, 0},
 			{0, 3},
 		},

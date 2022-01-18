@@ -111,7 +111,7 @@ func getOccupation(state GameState) occupationGrid {
 
 	// Add the neutral pieces.
 	for _, n := range state.Neutrals {
-		occupied[Coordinate{n.X, n.Y}] = occupiedNeutral
+		occupied[Coordinate(n)] = occupiedNeutral
 	}
 
 	return occupied

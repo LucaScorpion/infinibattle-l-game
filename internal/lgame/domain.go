@@ -2,8 +2,8 @@ package lgame
 
 type GameState struct {
 	PlayerTurn PlayerIndex
-	Players    []Player
-	Neutrals   []NeutralPiece
+	Players    [2]Player
+	Neutrals   [2]NeutralPiece
 }
 
 type Player struct {

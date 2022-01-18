@@ -22,7 +22,7 @@ y ┌─────────┐
 func getSimpleState() GameState {
 	return GameState{
 		PlayerTurn: PlayerRed,
-		Players: []Player{
+		Players: [2]Player{
 			{
 				Piece: LPiece{
 					{1, 0},
@@ -42,7 +42,7 @@ func getSimpleState() GameState {
 				Score: 0,
 			},
 		},
-		Neutrals: []NeutralPiece{
+		Neutrals: [2]NeutralPiece{
 			{2, 0},
 			{1, 3},
 		},
@@ -67,7 +67,7 @@ y ┌─────────┐
 func getDifficultState() GameState {
 	return GameState{
 		PlayerTurn: PlayerBlue,
-		Players: []Player{
+		Players: [2]Player{
 			{
 				Piece: LPiece{
 					{0, 2},
@@ -87,7 +87,7 @@ func getDifficultState() GameState {
 				Score: 0,
 			},
 		},
-		Neutrals: []NeutralPiece{
+		Neutrals: [2]NeutralPiece{
 			{2, 0},
 			{0, 3},
 		},
@@ -112,6 +112,12 @@ func TestGetLShapeMoves(t *testing.T) {
 	if nextStatesCount != expectedStatesCount {
 		t.Errorf("Expected %d L-shape moves but got %d", expectedStatesCount, nextStatesCount)
 	}
+
+	if nextStates[0].Players[state.PlayerTurn].Piece == nextStates[1].Players[state.PlayerTurn].Piece {
+		t.Errorf("Got multiple states which are the same")
+	}
+
+	assertAllStatesValid(t, nextStates)
 }
 
 func TestGetNeutralMoves(t *testing.T) {
@@ -132,6 +138,8 @@ func TestGetNeutralMoves(t *testing.T) {
 	if nextStatesCount != expectedStatesCount {
 		t.Errorf("Expected %d neutral moves but got %d", expectedStatesCount, nextStatesCount)
 	}
+
+	assertAllStatesValid(t, nextStates)
 }
 
 func TestGetMoves(t *testing.T) {
@@ -152,6 +160,8 @@ func TestGetMoves(t *testing.T) {
 	if nextStatesCount != expectedStatesCount {
 		t.Errorf("Expected %d moves but got %d", expectedStatesCount, nextStatesCount)
 	}
+
+	assertAllStatesValid(t, nextStates)
 }
 
 func TestGetMovesDifficult(t *testing.T) {
@@ -171,5 +181,35 @@ func TestGetMovesDifficult(t *testing.T) {
 
 	if nextStatesCount != expectedStatesCount {
 		t.Errorf("Expected %d moves but got %d", expectedStatesCount, nextStatesCount)
+	}
+
+	assertAllStatesValid(t, nextStates)
+}
+
+func assertAllStatesValid(t *testing.T, states []GameState) {
+	for _, state := range states {
+		occupied := occupationGrid{}
+
+		for i, p := range state.Players {
+			for _, c := range p.Piece {
+				if _, ok := occupied[c]; ok {
+					t.Errorf("Grid space is already occupied: %d,%d", c.X, c.Y)
+				}
+
+				occupied[c] = playerIndexToOccupation[PlayerIndex(i)]
+			}
+		}
+
+		for _, n := range state.Neutrals {
+			if _, ok := occupied[Coordinate(n)]; ok {
+				t.Errorf("Grid space is already occupied: %d,%d", n.X, n.Y)
+			}
+
+			occupied[Coordinate(n)] = occupiedNeutral
+		}
+
+		if len(occupied) != 10 {
+			t.Errorf("10 Grid spaces should be occupied, but got %d", len(occupied))
+		}
 	}
 }

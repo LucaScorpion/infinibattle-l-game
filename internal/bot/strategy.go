@@ -17,8 +17,6 @@ type opponentMoveOption struct {
 
 func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameState {
 	moveOptions := buildMoveOptions(settings, cur)
-	// TODO: remove debug code.
-	return moveOptions[0].ourMove
 
 	curScore := cur.Players[cur.PlayerTurn].Score
 	var scoringMoves []moveOption

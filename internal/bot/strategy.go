@@ -94,3 +94,8 @@ func loadOurMovesAfterOpponentMove(settings lgame.GameSettings, opponentMove *op
 		opponentMove.ourLMoves = lgame.GetLShapeMoves(settings, opponentMove.move)
 	}
 }
+
+// TODO: implement this
+//func weAreWinning(thisPlayer lgame.PlayerIndex, state lgame.GameState) bool {
+//	return state.Players[thisPlayer].Score > state.Players[thisPlayer]
+//}

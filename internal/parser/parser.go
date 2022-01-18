@@ -61,15 +61,15 @@ func parseTurnState(in string) turnState {
 	return state
 }
 
-func GetMoveOutput(state lgame.GameState) string {
+func GetMoveOutput(nextState lgame.GameState) string {
 	var place placePiecesCommand
-	for i := 0; i < len(state.Neutrals); i++ {
-		place.NeutralPieceCoordinates[i] = coordinateOutput(lgame.Coordinate(state.Neutrals[i]))
+	for i := 0; i < len(nextState.Neutrals); i++ {
+		place.NeutralPieceCoordinates[i] = coordinateOutput(lgame.Coordinate(nextState.Neutrals[i]))
 	}
 
 	// Get the previous player, for which we should output the coordinates.
-	prevPlayer := (state.PlayerTurn + 1) % 2
-	playerPiece := state.Players[prevPlayer].Piece
+	prevPlayer := lgame.OtherPlayer(nextState.PlayerTurn)
+	playerPiece := nextState.Players[prevPlayer].Piece
 
 	for i := 0; i < len(playerPiece); i++ {
 		place.PlayerLPieceCoordinates[i] = coordinateOutput(playerPiece[i])

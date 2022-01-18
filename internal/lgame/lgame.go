@@ -63,7 +63,7 @@ func GetLShapeMoves(settings GameSettings, state GameState) []GameState {
 				if isCornerPoint {
 					newState.Players[state.PlayerTurn].Score++
 				}
-				newState.PlayerTurn = (state.PlayerTurn + 1) % 2
+				newState.PlayerTurn = OtherPlayer(state.PlayerTurn)
 				nextStates = append(nextStates, newState)
 			}
 		}
@@ -97,6 +97,10 @@ func GetNeutralMoves(settings GameSettings, state GameState) []GameState {
 	}
 
 	return nextStates
+}
+
+func OtherPlayer(p PlayerIndex) PlayerIndex {
+	return (p + 1) % 2
 }
 
 func getOccupation(state GameState) occupationGrid {

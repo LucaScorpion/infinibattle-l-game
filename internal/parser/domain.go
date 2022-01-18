@@ -28,6 +28,6 @@ const (
 type coordinate [2]int
 
 type placePiecesCommand struct {
-	PlayerLPieceCoordinates [4]coordinate `json:"playerLPieceCoordinates"`
-	NeutralPieceCoordinates [2]coordinate `json:"neutralPieceCoordinates"`
+	PlayerLPieceCoordinates [4]coordinate `json:"PlayerLPieceCoordinates"`
+	NeutralPieceCoordinates [2]coordinate `json:"NeutralPieceCoordinates"`
 }

@@ -6,7 +6,7 @@ import (
 )
 
 func TestParseGameState(t *testing.T) {
-	state := ParseGameState("{\"gameState\":{\"board\":{\"board\":[[4,0,0,0],[1,2,2,2],[1,1,1,2],[0,0,0,4]]},\"scorePlayer0\":7,\"scorePlayer1\":50},\"turn\":1,\"player\":1}")
+	state := ParseGameState("{\"gameState\":{\"board\":{\"board\":[[4,0,0,0],[1,2,2,2],[1,1,1,2],[0,0,0,4]]},\"scorePlayer0\":7,\"scorePlayer1\":50},\"turn\":1,\"player\":0}")
 
 	if state.PlayerTurn != lgame.PlayerRed {
 		t.Errorf("Wrong turn: %d", state.PlayerTurn)

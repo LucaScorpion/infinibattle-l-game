@@ -36,7 +36,7 @@ func ParseGameState(in string) lgame.GameState {
 	}
 
 	return lgame.GameState{
-		PlayerTurn: lgame.PlayerIndex(turn.Player - 1),
+		PlayerTurn: lgame.PlayerIndex(turn.Player),
 		Players: []lgame.Player{
 			{
 				Piece: playerOne,

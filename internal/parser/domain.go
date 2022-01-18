@@ -3,7 +3,7 @@ package parser
 type turnState struct {
 	GameState gameState `json:"GameState"`
 	Turn      int       `json:"Turn"`
-	Player    int       `json:"Player"` // One of the piece types.
+	Player    int       `json:"Player"` // 1 or 0
 }
 
 type gameState struct {

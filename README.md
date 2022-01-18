@@ -18,15 +18,17 @@ go run ./main.go
 ```mermaid
 stateDiagram-v2
 
-[*] --> BotStarted: bot-start
-BotStarted --> GameInitialised: game-init
-GameInitialised --> AwaitingTurn: game-start\n[turnState]
-AwaitingTurn --> TurnInitialised: turn-init
-TurnInitialised --> TurnStarted: turn-start\n[turnState]
+[*] --> BotInit
+note left of BotInit: Output\nbot-start
+
+BotInit --> GameInitialised: game-init\n[turnState]
+GameInitialised --> AwaitingTurn: game-start
+AwaitingTurn --> TurnInitialised: turn-init\n[turnState]
+TurnInitialised --> TurnStarted: turn-start
 TurnStarted --> AwaitingTurn
 
-AwaitingTurn --> [*]: throw
-AwaitingTurn --> AwaitingTurn: sleep [seconds]
+AwaitingTurn --> [*]: throw / game-end
+AwaitingTurn --> AwaitingTurn: sleep
 
 note right of TurnStarted: Output\n[PlacePiecesCommand]\nturn-end
 

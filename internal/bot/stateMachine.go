@@ -9,62 +9,58 @@ import (
 
 type stateFn func(*Bot) stateFn
 
-func awaitBotStart(bot *Bot) stateFn {
-	bot.printComment("Waiting for: bot-start")
-	cmd := bot.readLine()
-
-	switch cmd {
-	case "q":
-		// Quick start for debugging purposes.
-		return awaitTurnStart
-	case "bot-start":
-		return awaitGameInit
-	default:
-		panic("Invalid command while starting bot: " + cmd)
-	}
+func botStarting(bot *Bot) stateFn {
+	bot.writeLine("bot-start")
+	return initGame
 }
 
-func awaitGameInit(bot *Bot) stateFn {
+func initGame(bot *Bot) stateFn {
 	bot.expectLine("game-init")
-	return awaitGameStart
-}
 
-func awaitGameStart(bot *Bot) stateFn {
-	bot.expectLine("game-start")
+	bot.printComment("Waiting for: game-start")
+	for bot.readLine() != "game-start" {
+		// Ignore any game init input.
+	}
+
 	return awaitTurn
 }
 
 func awaitTurn(bot *Bot) stateFn {
-	bot.printComment("Waiting for: turn-init, sleep, or throw")
+	bot.printComment("Awaiting turn or command")
 	cmd := bot.readLine()
 
 	switch cmd {
+	case "turn-init":
+		return initTurn
 	case "sleep":
-		bot.printComment("Sleep is not currently implemented")
-		//if seconds, err := strconv.Atoi(arg); err == nil {
-		//	bot.printComment(fmt.Sprintf("Sleeping for %d seconds", seconds))
-		//	time.Sleep(time.Duration(seconds) * time.Second)
-		//}
+		bot.printComment("Sleeping for 1 second")
+		time.Sleep(1 * time.Second)
 		return awaitTurn
+	case "game-end":
+		fallthrough
 	case "throw":
 		bot.printComment("gg")
 		return nil
-	case "turn-init":
-		return awaitTurnStart
 	default:
 		panic("Invalid command while awaiting turn: " + cmd)
 	}
 }
 
-func awaitTurnStart(bot *Bot) stateFn {
-	bot.expectLine("turn-start")
+func initTurn(bot *Bot) stateFn {
+	// Parse the turn state.
+	bot.printComment("Initialising turn")
 	state := parser.ParseGameState(bot.readLine())
 
 	// Get the next state, benchmark.
+	bot.printComment("Starting ")
 	startTime := time.Now()
 	nextState := getNextState(lgame.DefaultSettings(), state)
 	thinkTime := time.Now().Sub(startTime).Seconds()
 	bot.printComment(fmt.Sprintf("Thinking took %.3f seconds", thinkTime))
+
+	for bot.readLine() != "turn-start" {
+		// Ignore any other turn input.
+	}
 
 	bot.writeLine(parser.GetMoveOutput(nextState))
 	bot.writeLine("turn-end")

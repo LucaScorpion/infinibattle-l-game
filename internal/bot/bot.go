@@ -2,8 +2,10 @@ package bot
 
 import (
 	"bufio"
+	"io"
 	"os"
 	"strings"
+	"time"
 )
 
 type Bot struct {
@@ -17,7 +19,7 @@ func NewBot() *Bot {
 			bufio.NewReader(os.Stdin),
 			bufio.NewWriter(os.Stdout),
 		),
-		currentState: awaitBotStart,
+		currentState: botStarting,
 	}
 }
 
@@ -37,10 +39,21 @@ func (bot *Bot) expectLine(expected string) {
 
 func (bot *Bot) readLine() string {
 	bytes, err := bot.rw.ReadBytes('\n')
+	line := string(bytes)
+
+	// Keep reading until the actual end of line.
+	for err == io.EOF {
+		bot.printComment("Re-reading stdin")
+		time.Sleep(10 * time.Millisecond)
+		bytes, err = bot.rw.ReadBytes('\n')
+		line += string(bytes)
+	}
+
 	if err != nil {
 		panic(err)
 	}
-	return strings.TrimSpace(string(bytes))
+
+	return strings.TrimSpace(line)
 }
 
 func (bot *Bot) writeLine(s string) {

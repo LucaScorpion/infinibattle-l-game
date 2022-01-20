@@ -12,7 +12,7 @@ func GetPossibleNextStates(settings GameSettings, cur GameState) []GameState {
 }
 
 func GetLShapeMoves(settings GameSettings, state GameState) []GameState {
-	grid := getOccupation(state)
+	grid := GetOccupation(state)
 	curPlayerOcc := playerIndexToOccupation[state.PlayerTurn]
 	var nextStates []GameState
 
@@ -76,7 +76,7 @@ func GetNeutralMoves(settings GameSettings, state GameState) []GameState {
 	var nextStates []GameState
 
 	for i, n := range state.Neutrals {
-		grid := getOccupation(state)
+		grid := GetOccupation(state)
 		delete(grid, Coordinate(n))
 
 		for x := 0; x < settings.BoardWidth; x++ {
@@ -103,8 +103,8 @@ func OtherPlayer(p PlayerIndex) PlayerIndex {
 	return (p + 1) % 2
 }
 
-func getOccupation(state GameState) occupationGrid {
-	occupied := occupationGrid{}
+func GetOccupation(state GameState) OccupationGrid {
+	occupied := OccupationGrid{}
 
 	// Add the L pieces.
 	for i, p := range state.Players {
@@ -121,7 +121,7 @@ func getOccupation(state GameState) occupationGrid {
 	return occupied
 }
 
-func isSamePlacement(piece LPiece, grid occupationGrid) bool {
+func isSamePlacement(piece LPiece, grid OccupationGrid) bool {
 	for _, c := range piece {
 		// Here we assume that the L piece placement is valid,
 		// i.e. it only ever overlaps with itself.

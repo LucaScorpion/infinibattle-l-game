@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func drawState(settings GameSettings, state GameState) string {
+func DrawState(settings GameSettings, state GameState) string {
 	grid := make([][]string, settings.BoardHeight)
 
 	// Initialize the empty grid.
@@ -29,6 +29,10 @@ func drawState(settings GameSettings, state GameState) string {
 		}
 
 		for _, c := range p.Piece {
+			if c.X < 0 || c.Y < 0 {
+				continue
+			}
+
 			grid[c.Y][c.X] = fmt.Sprintf("\x1b[3%d;4%dm%d%d\x1b[0m", color, color, i, i)
 		}
 	}

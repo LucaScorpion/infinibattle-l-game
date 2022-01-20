@@ -99,14 +99,14 @@ func TestGetLShapeMoves(t *testing.T) {
 	expectedStatesCount := 4
 
 	t.Log("Starting state:")
-	t.Log(drawState(DefaultSettings(), state))
+	t.Log(DrawState(DefaultSettings(), state))
 
 	nextStates := GetLShapeMoves(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible L-shape moves:")
 	for _, s := range nextStates {
-		t.Log(drawState(DefaultSettings(), s))
+		t.Log(DrawState(DefaultSettings(), s))
 	}
 
 	if nextStatesCount != expectedStatesCount {
@@ -125,14 +125,14 @@ func TestGetNeutralMoves(t *testing.T) {
 	expectedStatesCount := 14
 
 	t.Log("Starting state:")
-	t.Log(drawState(DefaultSettings(), state))
+	t.Log(DrawState(DefaultSettings(), state))
 
 	nextStates := GetNeutralMoves(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible neutral moves:")
 	for _, s := range nextStates {
-		t.Log(drawState(DefaultSettings(), s))
+		t.Log(DrawState(DefaultSettings(), s))
 	}
 
 	if nextStatesCount != expectedStatesCount {
@@ -147,14 +147,14 @@ func TestGetMoves(t *testing.T) {
 	expectedStatesCount := 56
 
 	t.Log("Starting state:")
-	t.Log(drawState(DefaultSettings(), state))
+	t.Log(DrawState(DefaultSettings(), state))
 
 	nextStates := GetPossibleNextStates(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible moves:")
 	for _, s := range nextStates {
-		t.Log(drawState(DefaultSettings(), s))
+		t.Log(DrawState(DefaultSettings(), s))
 	}
 
 	if nextStatesCount != expectedStatesCount {
@@ -169,14 +169,14 @@ func TestGetMovesDifficult(t *testing.T) {
 	expectedStatesCount := 238
 
 	t.Log("Starting state:")
-	t.Log(drawState(DefaultSettings(), state))
+	t.Log(DrawState(DefaultSettings(), state))
 
 	nextStates := GetPossibleNextStates(DefaultSettings(), state)
 	nextStatesCount := len(nextStates)
 
 	t.Log("Possible moves:")
 	for _, s := range nextStates {
-		t.Log(drawState(DefaultSettings(), s))
+		t.Log(DrawState(DefaultSettings(), s))
 	}
 
 	if nextStatesCount != expectedStatesCount {
@@ -188,7 +188,7 @@ func TestGetMovesDifficult(t *testing.T) {
 
 func assertAllStatesValid(t *testing.T, states []GameState) {
 	for _, state := range states {
-		occupied := occupationGrid{}
+		occupied := OccupationGrid{}
 
 		for i, p := range state.Players {
 			for _, c := range p.Piece {

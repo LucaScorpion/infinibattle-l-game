@@ -35,7 +35,7 @@ const (
 	occupiedNeutral
 )
 
-type occupationGrid map[Coordinate]occupation
+type OccupationGrid map[Coordinate]occupation
 
 var playerIndexToOccupation = map[PlayerIndex]occupation{
 	PlayerRed:  occupiedRed,

@@ -27,7 +27,7 @@ func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameSt
 			return move.state
 		}
 
-		// Check if this move increases our score.
+		// Store all moves that increase our score.
 		if move.state.Players[cur.PlayerTurn].Score > curScore {
 			scoringMoves = append(scoringMoves, move)
 		}
@@ -35,6 +35,8 @@ func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameSt
 
 	// Return the first scoring move that doesn't lock us in (unless our score is higher).
 	for _, move := range scoringMoves {
+		// TODO: Rate the moves
+		// TODO: Block opponent scoring opportunities?
 		if isWinningOrFreeMove(settings, &move, cur.PlayerTurn) {
 			return move.state
 		}
@@ -42,6 +44,8 @@ func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameSt
 
 	// Find any move that doesn't lock us in (unless our score is higher).
 	for _, move := range moveOptions {
+		// TODO: Rate the moves
+		// TODO: Block opponent scoring opportunities?
 		if isWinningOrFreeMove(settings, &move, cur.PlayerTurn) {
 			return move.state
 		}

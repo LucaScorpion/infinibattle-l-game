@@ -46,15 +46,15 @@ There are 16 arrangements (2 if you remove rotations and reflections) where the 
 ```
 ┌─────────┐
 │ R □ □ N │
-│ R □ □ □ │
-│ R R □ □ │
-│ □ □ N □ │
+│ R □ B B │
+│ R R □ B │
+│ □ □ N B │
 └─────────┘
 
 ┌─────────┐
 │ R □ □ N │
 │ R □ □ □ │
-│ R R □ □ │
-│ □ □ □ N │
+│ R R B □ │
+│ B B B N │
 └─────────┘
 ```

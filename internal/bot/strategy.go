@@ -2,6 +2,7 @@ package bot
 
 import (
 	"infinibattle-l-game/internal/lgame"
+	"math"
 	"math/rand"
 )
 
@@ -18,35 +19,60 @@ type opponentMoveOption struct {
 func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameState {
 	moveOptions := buildMoveOptions(settings, cur)
 
-	curScore := cur.Players[cur.PlayerTurn].Score
+	ourPlayer := cur.PlayerTurn
+	opponentPlayer := lgame.OtherPlayer(cur.PlayerTurn)
+	ourScore := cur.Players[ourPlayer].Score
+	opponentScore := cur.Players[opponentPlayer].Score
+
 	var scoringMoves []moveOption
 
 	for _, move := range moveOptions {
 		// Check for a blocking move, but only if our score is higher.
-		if len(move.opponentMoves) == 0 && weAreWinning(cur.PlayerTurn, move.state) {
+		if len(move.opponentMoves) == 0 && weAreWinning(ourPlayer, move.state) {
 			return move.state
 		}
 
 		// Store all moves that increase our score.
-		if move.state.Players[cur.PlayerTurn].Score > curScore {
+		if move.state.Players[ourPlayer].Score > ourScore {
 			scoringMoves = append(scoringMoves, move)
 		}
 	}
 
-	// Return the first scoring move that doesn't lock us in (unless our score is higher).
+	// Find the move that gives our opponent the least scoring move possibilities.
+	var bestMove moveOption
+	var opponentScoringOptionsAfterBest = math.MaxInt
 	for _, move := range scoringMoves {
-		// TODO: Rate the moves
-		// TODO: Block opponent scoring opportunities?
-		if isWinningOrFreeMove(settings, &move, cur.PlayerTurn) {
-			return move.state
+		// Find how many scoring options the opponent will have.
+		opponentScoringOptions := 0
+		for _, o := range move.opponentMoves {
+			// Check if the opponent score increased.
+			if o.move.Players[opponentPlayer].Score > opponentScore {
+				opponentScoringOptions++
+			}
 		}
+
+		// Compare, store the new option.
+		if opponentScoringOptions < opponentScoringOptionsAfterBest {
+			bestMove = move
+			opponentScoringOptionsAfterBest = opponentScoringOptions
+
+			// If we find a move where our opponent can't score, we're instantly done.
+			if opponentScoringOptions == 0 {
+				break
+			}
+		}
+	}
+
+	// If there is a scoring option, return that.
+	if len(scoringMoves) > 0 {
+		return bestMove.state
 	}
 
 	// Find any move that doesn't lock us in (unless our score is higher).
 	for _, move := range moveOptions {
 		// TODO: Rate the moves
 		// TODO: Block opponent scoring opportunities?
-		if isWinningOrFreeMove(settings, &move, cur.PlayerTurn) {
+		if isWinningOrFreeMove(settings, &move, ourPlayer) {
 			return move.state
 		}
 	}

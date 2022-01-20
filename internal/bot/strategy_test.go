@@ -52,8 +52,85 @@ func getDifficultState() lgame.GameState {
 	}
 }
 
-func BenchmarkGetNextState(b *testing.B) {
-	totalTime := 0.0
+/*
+A more state where it's possible for red to prevent blue from scoring next turn.
+
+  x 0 1 2 3
+y ┌─────────┐
+0 │ R □ □ N │
+1 │ R R R N │
+2 │ □ □ B □ │
+3 │ B B B □ │
+  └─────────┘
+
+Should become:
+
+  x 0 1 2 3
+y ┌─────────┐
+0 │ R □ □ N │
+1 │ R □ □ □ │
+2 │ R R B □ │
+3 │ B B B N │
+  └─────────┘
+*/
+func getScorePreventableState() (lgame.GameState, lgame.GameState) {
+	return lgame.GameState{
+			PlayerTurn: lgame.PlayerRed,
+			Players: [2]lgame.Player{
+				{
+					Piece: lgame.LPiece{
+						{0, 1},
+						{1, 1},
+						{2, 1},
+						{0, 0},
+					},
+					Score: 0,
+				},
+				{
+					Piece: lgame.LPiece{
+						{0, 3},
+						{1, 3},
+						{2, 3},
+						{2, 2},
+					},
+					Score: 0,
+				},
+			},
+			Neutrals: [2]lgame.NeutralPiece{
+				{3, 0},
+				{3, 1},
+			},
+		},
+		lgame.GameState{
+			PlayerTurn: lgame.PlayerBlue,
+			Players: [2]lgame.Player{
+				{
+					Piece: lgame.LPiece{
+						{0, 2},
+						{0, 1},
+						{0, 0},
+						{1, 2},
+					},
+					Score: 1,
+				},
+				{
+					Piece: lgame.LPiece{
+						{0, 3},
+						{1, 3},
+						{2, 3},
+						{2, 2},
+					},
+					Score: 0,
+				},
+			},
+			Neutrals: [2]lgame.NeutralPiece{
+				{3, 0},
+				{3, 3},
+			},
+		}
+}
+
+func BenchmarkGetDifficultNextState(b *testing.B) {
 	worstTime := 0.0
 
 	for i := 0; i < b.N; i++ {
@@ -61,13 +138,37 @@ func BenchmarkGetNextState(b *testing.B) {
 
 		getNextState(lgame.DefaultSettings(), getDifficultState())
 
-		thinkTime := time.Now().Sub(startTime).Seconds()
-		worstTime = math.Max(worstTime, thinkTime)
-		totalTime = totalTime + thinkTime
+		worstTime = math.Max(worstTime, time.Now().Sub(startTime).Seconds())
 	}
 
 	if b.N > 1 {
-		b.Logf("Average time: %.3f seconds", totalTime/float64(b.N))
+		b.Logf("Worst time: %.3f seconds", worstTime)
+	}
+}
+
+func TestGetScorePreventableState(t *testing.T) {
+	state, expectedState := getScorePreventableState()
+	result := getNextState(lgame.DefaultSettings(), state)
+
+	if result != expectedState {
+		t.Error("Did not prevent opponent from scoring.")
+		t.Log(lgame.DrawState(lgame.DefaultSettings(), result))
+	}
+}
+
+func BenchmarkGetScorePreventableState(b *testing.B) {
+	worstTime := 0.0
+
+	for i := 0; i < b.N; i++ {
+		startTime := time.Now()
+
+		state, _ := getScorePreventableState()
+		getNextState(lgame.DefaultSettings(), state)
+
+		worstTime = math.Max(worstTime, time.Now().Sub(startTime).Seconds())
+	}
+
+	if b.N > 1 {
 		b.Logf("Worst time: %.3f seconds", worstTime)
 	}
 }

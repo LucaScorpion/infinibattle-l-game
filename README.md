@@ -3,8 +3,8 @@
 ## Development
 
 ```shell
-# Run the tests.
-go test ./...
+# Run all tests and benchmarks
+./testbench.sh
 
 # Format the code.
 go fmt ./...
@@ -35,6 +35,10 @@ note right of TurnStarted: Output\n[PlacePiecesCommand]\nturn-end
 ```
 
 ## Research
+
+The `main.go` file contains an extra `main2` function, which when ran outputs some information about the score blocking options.
+
+### Findings
 
 There are 48 ways to place an L on an empty board.
 Of those, 24 ways score a point.

@@ -18,7 +18,6 @@ type stateWithSubStates struct {
 	subStates []lgame.GameState
 }
 
-// This method is for research purposes.
 func main2() {
 	emptyBoard := lgame.GameState{
 		PlayerTurn: 0,

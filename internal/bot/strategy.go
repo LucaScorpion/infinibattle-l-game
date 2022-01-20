@@ -3,7 +3,6 @@ package bot
 import (
 	"infinibattle-l-game/internal/lgame"
 	"math"
-	"math/rand"
 )
 
 type moveOption struct {
@@ -19,11 +18,13 @@ type opponentMoveOption struct {
 func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameState {
 	moveOptions := buildMoveOptions(settings, cur)
 
+	// Get some stats from the current state.
 	ourPlayer := cur.PlayerTurn
 	opponentPlayer := lgame.OtherPlayer(cur.PlayerTurn)
 	ourScore := cur.Players[ourPlayer].Score
 	opponentScore := cur.Players[opponentPlayer].Score
 
+	// Keep track of all scoring moves, check those first.
 	var scoringMoves []moveOption
 
 	for _, move := range moveOptions {
@@ -38,10 +39,25 @@ func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameSt
 		}
 	}
 
+	// If there is a scoring option, return that.
+	if len(scoringMoves) > 0 {
+		return findBestMove(scoringMoves, opponentPlayer, opponentScore).state
+	}
+
+	// Return the best option out of the rest.
+	return findBestMove(moveOptions, opponentPlayer, opponentScore).state
+}
+
+func findBestMove(options []moveOption, opponentPlayer lgame.PlayerIndex, opponentScore int) moveOption {
+	if len(options) == 0 {
+		panic("Cannot find best move when options is empty.")
+	}
+
 	// Find the move that gives our opponent the least scoring move possibilities.
 	var bestMove moveOption
 	var opponentScoringOptionsAfterBest = math.MaxInt
-	for _, move := range scoringMoves {
+
+	for _, move := range options {
 		// Find how many scoring options the opponent will have.
 		opponentScoringOptions := 0
 		for _, o := range move.opponentMoves {
@@ -61,24 +77,13 @@ func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameSt
 				break
 			}
 		}
+
+		// TODO: Watch out for killer positions?
+		// TODO: Try to keep our long side away from the wall?
+		// TODO: Try to move towards a state where we can potentially block the opponent in future moves?
 	}
 
-	// If there is a scoring option, return that.
-	if len(scoringMoves) > 0 {
-		return bestMove.state
-	}
-
-	// Find any move that doesn't lock us in (unless our score is higher).
-	for _, move := range moveOptions {
-		// TODO: Rate the moves
-		// TODO: Block opponent scoring opportunities?
-		if isWinningOrFreeMove(settings, &move, ourPlayer) {
-			return move.state
-		}
-	}
-
-	// Uhm... we're fucked I guess? Just return any move.
-	return moveOptions[rand.Intn(len(moveOptions))].state
+	return bestMove
 }
 
 func buildMoveOptions(settings lgame.GameSettings, cur lgame.GameState) []moveOption {

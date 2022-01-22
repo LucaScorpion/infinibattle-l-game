@@ -1,5 +1,7 @@
 package lgame
 
+import "fmt"
+
 type GameState struct {
 	PlayerTurn PlayerIndex
 	Players    [2]Player
@@ -14,6 +16,10 @@ type Player struct {
 type Coordinate struct {
 	X int
 	Y int
+}
+
+func (c Coordinate) String() string {
+	return fmt.Sprintf("(%d,%d)", c.X, c.Y)
 }
 
 type LPiece [4]Coordinate

@@ -36,10 +36,10 @@ There are 16 arrangements (2 if you remove rotations and reflections) where the 
 └─────────┘
 
 ┌─────────┐
-│ R □ □ N │
-│ R □ □ □ │
-│ R R B □ │
-│ B B B N │
+│ N □ □ N │
+│ □ □ B B │
+│ □ □ R B │
+│ R R R B │
 └─────────┘
 ```
 

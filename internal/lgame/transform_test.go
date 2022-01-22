@@ -1,12 +1,11 @@
-package bot
+package lgame
 
 import (
-	"infinibattle-l-game/internal/lgame"
 	"testing"
 )
 
 func TestRotateCoordinate90Cw(t *testing.T) {
-	cases := map[lgame.Coordinate]lgame.Coordinate{
+	cases := map[Coordinate]Coordinate{
 		{0, 0}: {3, 0},
 		{1, 0}: {3, 1},
 		{2, 0}: {3, 2},
@@ -26,7 +25,7 @@ func TestRotateCoordinate90Cw(t *testing.T) {
 	}
 
 	for coord, expected := range cases {
-		result := rotateCoordinate90Cw(lgame.DefaultSettings(), coord)
+		result := rotateCoordinate90Cw(DefaultSettings(), coord)
 		if result != expected {
 			t.Errorf("Coordinate %v should rotate to %v, but gave %v", coord, expected, result)
 		}
@@ -34,14 +33,30 @@ func TestRotateCoordinate90Cw(t *testing.T) {
 }
 
 func TestRotateLPiece90Cw(t *testing.T) {
-	cases := map[lgame.LPiece]lgame.LPiece{
+	cases := map[LPiece]LPiece{
 		{{0, 2}, {0, 1}, {0, 0}, {1, 2}}: {{1, 0}, {2, 0}, {3, 0}, {1, 1}},
 	}
 
 	for piece, expected := range cases {
-		result := rotateLPiece90Cw(lgame.DefaultSettings(), piece)
+		result := rotateLPiece90Cw(DefaultSettings(), piece)
 		if result != expected {
 			t.Errorf("L piece %v should rotate to %v, but gave %v", piece, expected, result)
+		}
+	}
+}
+
+func TestFlipCoordinateHor(t *testing.T) {
+	cases := map[Coordinate]Coordinate{
+		{0, 0}: {3, 0},
+		{1, 1}: {2, 1},
+		{2, 2}: {1, 2},
+		{3, 3}: {0, 3},
+	}
+
+	for coord, expected := range cases {
+		result := flipCoordinateHor(DefaultSettings(), coord)
+		if result != expected {
+			t.Errorf("Coordinate %v should flip to %v, but gave %v", coord, expected, result)
 		}
 	}
 }

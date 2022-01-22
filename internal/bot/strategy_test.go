@@ -3,9 +3,18 @@ package bot
 import (
 	"infinibattle-l-game/internal/lgame"
 	"math"
+	"os"
 	"testing"
 	"time"
 )
+
+func TestMain(m *testing.M) {
+	// Setup.
+	allIdealStates = getAllIdealStateTransforms(lgame.DefaultSettings())
+
+	code := m.Run()
+	os.Exit(code)
+}
 
 /*
 A more difficult state.
@@ -53,7 +62,7 @@ func getDifficultState() lgame.GameState {
 }
 
 /*
-A more state where it's possible for red to prevent blue from scoring next turn.
+A state where it's possible for red to prevent blue from scoring next turn.
 
   x 0 1 2 3
 y ┌─────────┐
@@ -84,7 +93,6 @@ func getScorePreventableState() (lgame.GameState, lgame.GameState) {
 						{2, 1},
 						{0, 0},
 					},
-					Score: 0,
 				},
 				{
 					Piece: lgame.LPiece{
@@ -93,7 +101,6 @@ func getScorePreventableState() (lgame.GameState, lgame.GameState) {
 						{2, 3},
 						{2, 2},
 					},
-					Score: 0,
 				},
 			},
 			Neutrals: [2]lgame.NeutralPiece{
@@ -111,7 +118,6 @@ func getScorePreventableState() (lgame.GameState, lgame.GameState) {
 						{0, 0},
 						{1, 2},
 					},
-					Score: 1,
 				},
 				{
 					Piece: lgame.LPiece{
@@ -120,7 +126,6 @@ func getScorePreventableState() (lgame.GameState, lgame.GameState) {
 						{2, 3},
 						{2, 2},
 					},
-					Score: 0,
 				},
 			},
 			Neutrals: [2]lgame.NeutralPiece{

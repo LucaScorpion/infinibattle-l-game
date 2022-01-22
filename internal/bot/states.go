@@ -73,6 +73,8 @@ var idealStates = []lgame.GameState{
 	},
 }
 
+var allIdealStates []lgame.GameState
+
 func getAllIdealStateTransforms(settings lgame.GameSettings) []lgame.GameState {
 	var result []lgame.GameState
 	for _, state := range idealStates {

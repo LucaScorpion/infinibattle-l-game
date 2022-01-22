@@ -40,7 +40,7 @@ func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameSt
 	}
 
 	// Check if we can move to one of the ideal states.
-	if ok, state := checkIdealStates(settings, cur); ok {
+	if ok, state := checkIdealStates(cur); ok {
 		return state
 	}
 
@@ -53,13 +53,12 @@ func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameSt
 	return findBestMove(moveOptions, opponentPlayer, opponentScore).state
 }
 
-func checkIdealStates(settings lgame.GameSettings, cur lgame.GameState) (bool, lgame.GameState) {
-	allIdealStates := getAllIdealStateTransforms(settings)
+func checkIdealStates(cur lgame.GameState) (bool, lgame.GameState) {
 	for _, goal := range allIdealStates {
 		// Copy the relevant information and apply it to our actual current state.
 		move := cur
 		move.Neutrals = goal.Neutrals
-		move.Players[move.PlayerTurn] = goal.Players[goal.PlayerTurn]
+		move.Players[cur.PlayerTurn] = goal.Players[goal.PlayerTurn]
 		move.PlayerTurn = lgame.OtherPlayer(cur.PlayerTurn)
 
 		// If the move is valid, return it.
@@ -94,15 +93,9 @@ func findBestMove(options []moveOption, opponentPlayer lgame.PlayerIndex, oppone
 		if opponentScoringOptions < opponentScoringOptionsAfterBest {
 			bestMove = move
 			opponentScoringOptionsAfterBest = opponentScoringOptions
-
-			// If we find a move where our opponent can't score, we're instantly done.
-			if opponentScoringOptions == 0 {
-				break
-			}
 		}
 
 		// TODO: Watch out for killer positions?
-		// TODO: Try to keep our long side away from the wall?
 		// TODO: Try to move towards a state where we can potentially block the opponent in future moves?
 	}
 
@@ -130,30 +123,6 @@ func buildMoveOptions(settings lgame.GameSettings, cur lgame.GameState) []moveOp
 	}
 
 	return moveOptions
-}
-
-func canMoveAfterAnyOpponentMove(settings lgame.GameSettings, move *moveOption) bool {
-	for _, opponentMove := range move.opponentMoves {
-		loadOurMovesAfterOpponentMove(settings, &opponentMove)
-
-		if len(opponentMove.ourLMoves) == 0 {
-			return false
-		}
-	}
-
-	return true
-}
-
-func loadOurMovesAfterOpponentMove(settings lgame.GameSettings, opponentMove *opponentMoveOption) {
-	if opponentMove.ourLMoves == nil {
-		// Here we only need to look at our possible L shape moves.
-		opponentMove.ourLMoves = lgame.GetLShapeMoves(settings, opponentMove.move)
-	}
-}
-
-func isWinningOrFreeMove(settings lgame.GameSettings, move *moveOption, thisPlayer lgame.PlayerIndex) bool {
-	// We only care about being locked in if we are behind in score.
-	return weAreWinning(thisPlayer, move.state) || canMoveAfterAnyOpponentMove(settings, move)
 }
 
 func weAreWinning(thisPlayer lgame.PlayerIndex, state lgame.GameState) bool {

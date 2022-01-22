@@ -10,6 +10,9 @@ import (
 type stateFn func(*Bot) stateFn
 
 func botStarting(bot *Bot) stateFn {
+	// Warm up.
+	allIdealStates = getAllIdealStateTransforms(lgame.DefaultSettings())
+
 	bot.writeLine("bot-start")
 	return initGame
 }

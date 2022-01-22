@@ -29,10 +29,10 @@ There are 16 arrangements (2 if you remove rotations and reflections) where the 
 
 ```
 ┌─────────┐
-│ R □ □ N │
-│ R □ B B │
-│ R R □ B │
-│ □ □ N B │
+│ N B B B │
+│ □ B □ N │
+│ □ □ R □ │
+│ R R R □ │
 └─────────┘
 
 ┌─────────┐

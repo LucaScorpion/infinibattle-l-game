@@ -12,7 +12,7 @@ func GetPossibleNextStates(settings GameSettings, cur GameState) []GameState {
 }
 
 func GetLShapeMoves(settings GameSettings, state GameState) []GameState {
-	grid := GetOccupation(state)
+	_, grid := GetOccupation(state)
 	curPlayerOcc := playerIndexToOccupation[state.PlayerTurn]
 	var nextStates []GameState
 
@@ -76,7 +76,7 @@ func GetNeutralMoves(settings GameSettings, state GameState) []GameState {
 	var nextStates []GameState
 
 	for i, n := range state.Neutrals {
-		grid := GetOccupation(state)
+		_, grid := GetOccupation(state)
 		delete(grid, Coordinate(n))
 
 		for x := 0; x < settings.BoardWidth; x++ {
@@ -103,22 +103,78 @@ func OtherPlayer(p PlayerIndex) PlayerIndex {
 	return (p + 1) % 2
 }
 
-func GetOccupation(state GameState) OccupationGrid {
+func GetOccupation(state GameState) (bool, OccupationGrid) {
 	occupied := OccupationGrid{}
 
 	// Add the L pieces.
 	for i, p := range state.Players {
 		for _, c := range p.Piece {
+			// Check if the square is already occupied.
+			if _, ok := occupied[c]; ok {
+				return false, occupied
+			}
+
 			occupied[c] = playerIndexToOccupation[PlayerIndex(i)]
 		}
 	}
 
 	// Add the neutral pieces.
 	for _, n := range state.Neutrals {
+		// Check if the square is already occupied.
+		if _, ok := occupied[Coordinate(n)]; ok {
+			return false, occupied
+		}
+
 		occupied[Coordinate(n)] = occupiedNeutral
 	}
 
-	return occupied
+	return true, occupied
+}
+
+func IsValidMove(from GameState, to GameState) bool {
+	playerPiece := to.Players[from.PlayerTurn].Piece
+	_, fromOcc := GetOccupation(from)
+	toValid, toOcc := GetOccupation(to)
+	curPlayerOcc := playerIndexToOccupation[from.PlayerTurn]
+
+	if !toValid {
+		return false
+	}
+
+	// Check if the L piece doesn't overlap anything other than itself in the old state.
+	// We need to check this against the old state because we need to make sure that the
+	// L shape moved before any neutral pieces were moved.
+	for _, c := range playerPiece {
+		if o, ok := fromOcc[c]; ok && o != curPlayerOcc {
+			return false
+		}
+	}
+
+	// Check if the L piece doesn't overlap anything other than itself in the new state.
+	for _, c := range playerPiece {
+		if o, ok := toOcc[c]; ok && o != curPlayerOcc {
+			return false
+		}
+	}
+
+	// Check if the L piece changed position.
+	if isSamePlacement(playerPiece, fromOcc) {
+		return false
+	}
+
+	// Check if at most one neutral piece moved.
+	moved := make(map[NeutralPiece]bool)
+	for _, n := range from.Neutrals {
+		moved[n] = true
+	}
+	for _, n := range to.Neutrals {
+		delete(moved, n)
+	}
+	if len(moved) > 1 {
+		return false
+	}
+
+	return true
 }
 
 func isSamePlacement(piece LPiece, grid OccupationGrid) bool {

@@ -39,13 +39,36 @@ func getNextState(settings lgame.GameSettings, cur lgame.GameState) lgame.GameSt
 		}
 	}
 
-	// If there is a scoring option, return that.
+	// Check if we can move to one of the ideal states.
+	if ok, state := checkIdealStates(settings, cur); ok {
+		return state
+	}
+
+	// Return the best option out of the scoring moves.
 	if len(scoringMoves) > 0 {
 		return findBestMove(scoringMoves, opponentPlayer, opponentScore).state
 	}
 
 	// Return the best option out of the rest.
 	return findBestMove(moveOptions, opponentPlayer, opponentScore).state
+}
+
+func checkIdealStates(settings lgame.GameSettings, cur lgame.GameState) (bool, lgame.GameState) {
+	allIdealStates := getAllIdealStateTransforms(settings)
+	for _, goal := range allIdealStates {
+		// Copy the relevant information and apply it to our actual current state.
+		move := cur
+		move.Neutrals = goal.Neutrals
+		move.Players[move.PlayerTurn] = goal.Players[goal.PlayerTurn]
+		move.PlayerTurn = lgame.OtherPlayer(cur.PlayerTurn)
+
+		// If the move is valid, return it.
+		if lgame.IsValidMove(cur, move) {
+			return true, move
+		}
+	}
+
+	return false, lgame.GameState{}
 }
 
 func findBestMove(options []moveOption, opponentPlayer lgame.PlayerIndex, opponentScore int) moveOption {

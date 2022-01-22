@@ -150,8 +150,19 @@ func TestGetScorePreventableState(t *testing.T) {
 	state, expectedState := getScorePreventableState()
 	result := getNextState(lgame.DefaultSettings(), state)
 
-	if result != expectedState {
-		t.Error("Did not prevent opponent from scoring.")
+	for i, p := range result.Players {
+		if p.Piece != expectedState.Players[i].Piece {
+			t.Errorf("Unexpected player %d state.", i)
+		}
+	}
+
+	for i, n := range result.Neutrals {
+		if n != expectedState.Neutrals[i] {
+			t.Errorf("Unexpected neutral %d state.", i)
+		}
+	}
+
+	if t.Failed() {
 		t.Log(lgame.DrawState(lgame.DefaultSettings(), result))
 	}
 }

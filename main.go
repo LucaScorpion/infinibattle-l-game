@@ -70,7 +70,7 @@ func main2() {
 				Y: pos / lgame.DefaultSettings().BoardWidth,
 			}
 
-			occ := lgame.GetOccupation(s.state)
+			_, occ := lgame.GetOccupation(s.state)
 			if _, ok := occ[lgame.Coordinate(neutralOne)]; ok {
 				continue
 			}

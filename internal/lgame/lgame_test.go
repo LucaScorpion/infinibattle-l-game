@@ -213,3 +213,166 @@ func assertAllStatesValid(t *testing.T, states []GameState) {
 		}
 	}
 }
+
+func TestIsValidMove(t *testing.T) {
+	/*
+		From:
+
+		  x 0 1 2 3
+		y ┌─────────┐
+		0 │ □ R N □ │
+		1 │ □ R B □ │
+		2 │ R R B □ │
+		3 │ □ N B B │
+		  └─────────┘
+	*/
+	simpleStateMoves := map[GameState]bool{
+		/*
+			  x 0 1 2 3
+			y ┌─────────┐
+			0 │ R R □ □ │
+			1 │ □ R B N │
+			2 │ □ R B □ │
+			3 │ □ N B B │
+			  └─────────┘
+		*/
+		{
+			PlayerTurn: PlayerBlue,
+			Players: [2]Player{
+				{
+					Piece: LPiece{
+						{1, 0},
+						{1, 1},
+						{1, 2},
+						{0, 0},
+					},
+				},
+				{
+					Piece: LPiece{
+						{2, 1},
+						{2, 2},
+						{2, 3},
+						{3, 3},
+					},
+				},
+			},
+			Neutrals: [2]NeutralPiece{
+				{1, 3},
+				{3, 1},
+			},
+		}: true,
+		/*
+			  x 0 1 2 3
+			y ┌─────────┐
+			0 │ N R R R │
+			1 │ □ □ B R │
+			2 │ □ □ B □ │
+			3 │ □ N B B │
+			  └─────────┘
+		*/
+		{
+			PlayerTurn: PlayerBlue,
+			Players: [2]Player{
+				{
+					Piece: LPiece{
+						{3, 0},
+						{2, 0},
+						{1, 0},
+						{3, 1},
+					},
+				},
+				{
+					Piece: LPiece{
+						{2, 1},
+						{2, 2},
+						{2, 3},
+						{3, 3},
+					},
+				},
+			},
+			Neutrals: [2]NeutralPiece{
+				{0, 0},
+				{1, 3},
+			},
+		}: false, // We moved our piece over the neutral piece.
+		/*
+			  x 0 1 2 3
+			y ┌─────────┐
+			0 │ R R □ N │
+			1 │ □ R B □ │
+			2 │ □ R B □ │
+			3 │ N □ B B │
+			  └─────────┘
+		*/
+		{
+			PlayerTurn: PlayerBlue,
+			Players: [2]Player{
+				{
+					Piece: LPiece{
+						{1, 0},
+						{1, 1},
+						{1, 2},
+						{0, 0},
+					},
+				},
+				{
+					Piece: LPiece{
+						{2, 1},
+						{2, 2},
+						{2, 3},
+						{3, 3},
+					},
+				},
+			},
+			Neutrals: [2]NeutralPiece{
+				{3, 0},
+				{0, 3},
+			},
+		}: false, // We moved both neutral pieces.
+		/*
+			  x 0 1 2 3
+			y ┌─────────┐
+			0 │ □ R N □ │
+			1 │ □ R B □ │
+			2 │ □ R X □ │
+			3 │ □ N B B │
+			  └─────────┘
+		*/
+		{
+			PlayerTurn: PlayerBlue,
+			Players: [2]Player{
+				{
+					Piece: LPiece{
+						{1, 2},
+						{1, 1},
+						{1, 0},
+						{2, 2},
+					},
+				},
+				{
+					Piece: LPiece{
+						{2, 1},
+						{2, 2},
+						{2, 3},
+						{3, 3},
+					},
+				},
+			},
+			Neutrals: [2]NeutralPiece{
+				{2, 0},
+				{1, 3},
+			},
+		}: false, // We overlap with blue.
+	}
+
+	for move, valid := range simpleStateMoves {
+		if IsValidMove(getSimpleState(), move) != valid {
+			validString := "valid"
+			if !valid {
+				validString = "invalid"
+			}
+			t.Errorf("Move should be %s:", validString)
+			t.Log(DrawState(DefaultSettings(), move))
+		}
+	}
+}

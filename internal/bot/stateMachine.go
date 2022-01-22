@@ -62,7 +62,7 @@ func initTurn(bot *Bot) stateFn {
 		// Ignore any other turn input.
 	}
 
-	bot.writeLine(parser.GetMoveOutput(nextState))
+	bot.writeLine(parser.GetMoveOutput(nextState, state.PlayerTurn))
 	bot.writeLine("turn-end")
 	return awaitTurn
 }
